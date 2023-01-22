@@ -15,8 +15,7 @@ const int ENCODER_CLK_PIN = 7;
 const int ENCODER_DT_PIN = 8;
 const int ENCODER_SW_PIN = 9;
 
-//const int BUZZER_S_PIN = A3;
-const int BUZZER_S_PIN = A2;
+const int BUZZER_S_PIN = A3;
 const int ROUND_LED_PIN = 6;
 const int REST_LED_PIN = 5;
 

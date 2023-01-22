@@ -71,9 +71,8 @@ namespace Timer
         if (CURRENT_TIME == 0)
             tone(Timer::BUZZER_PIN, 4000, 500);
 
-        if (TOTAL_TIME % 2 == 0 && DISPLAY_ROUND){
+        if (TOTAL_TIME % 2 == 0 && DISPLAY_ROUND)
             DISPLAY_ROUND = false;
-            }
 
         TCNT1 = 0xC2F8; // for 1 sec at 16 MHz
     }
@@ -104,10 +103,7 @@ namespace Timer
 
     void displayTime(int time)
     {
-        if (!DISPLAY_ROUND)
-        {
-            (*timeDisplayCallback)(time);
-        }
+        (*timeDisplayCallback)(time);
     }
 
     void beginTraining()
@@ -149,17 +145,19 @@ namespace Timer
                 displayTime(CURRENT_TIME);
             }
         }
+        disableTimer();
+        switchLed(0);
+        (*endCallback)(TOTAL_TIME);
+        TRAINING_ENABLED = false;
+        digitalWrite(ROUND_LED_PIN, HIGH);
+        digitalWrite(REST_LED_PIN, HIGH);
+        tone(Timer::BUZZER_PIN, 4000, 2000);
         unsigned long endMilis = millis();
         Serial.print("End time: ");
         Serial.println(endMilis);
         unsigned long totalMilis = (endMilis - startMilis) / 1000;
         Serial.print("Total time: ");
         Serial.println(totalMilis);
-        (*endCallback)(TOTAL_TIME);
-        TRAINING_ENABLED = false;
-        disableTimer();
-        switchLed(0);
-        noTone(BUZZER_PIN);
     }
 
 } // namespace Timer
