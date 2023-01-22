@@ -32,9 +32,8 @@ namespace Encoder
         uint8_t prevNextCode = 0;
         uint16_t store = 0;
 
-        // Variables will change:
-        int sw_lastState; // the previous state from the input pin
-        int sw_currentState;    // the current reading from the input pin
+        int sw_lastState;
+        int sw_currentState;
         unsigned long sw_pressedTime = 0;
         unsigned long sw_releasedTime = 0;
 

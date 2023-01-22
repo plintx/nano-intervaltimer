@@ -27,6 +27,8 @@ namespace Timer
     void (*roundDisplayCallback)(int);
     void (*endCallback)(int);
 
+    void (*timerAction)();
+
     void setup(RoutineConfiguration routineCfg, int buzzerPin, int roundLedPin, int restLedPin, void (*tDisplayCallback)(int), void (*rDisplayCallback)(int), void (*doneCallback)(int))
     {
         Timer::routine = routineCfg;
@@ -62,9 +64,19 @@ namespace Timer
 
     ISR(TIMER1_OVF_vect)
     {
-        CURRENT_TIME--;
         TOTAL_TIME++;
+        (*timerAction)();
+        TCNT1 = 0xC2F8; // for 1 sec at 16 MHz
+    }
 
+    void timerAfterTrainingAction(){
+        (*timeDisplayCallback)(TOTAL_TIME);
+    }
+
+    void timerTrainingAction()
+    {
+        digitalWrite(Timer::BUZZER_PIN, LOW);
+        CURRENT_TIME--;
         if (CURRENT_TIME <= 3 && CURRENT_TIME > 0)
             tone(Timer::BUZZER_PIN, 3000, 100);
 
@@ -73,8 +85,6 @@ namespace Timer
 
         if (TOTAL_TIME % 2 == 0 && DISPLAY_ROUND)
             DISPLAY_ROUND = false;
-
-        TCNT1 = 0xC2F8; // for 1 sec at 16 MHz
     }
 
     void disableTimer()
@@ -110,6 +120,7 @@ namespace Timer
     {
         TRAINING_ENABLED = true;
         TOTAL_TIME = 0;
+        timerAction = timerTrainingAction;
 
         // INITIAL TIME
         CURRENT_TIME = routine.INT_TIME;
@@ -125,13 +136,10 @@ namespace Timer
 
         for (int round = (int)routine.ROUNDS; round > 0; round--)
         {
-
             // ROUND TIME
-
             CURRENT_TIME = routine.ROUND_TIME;
             switchLed(ROUND_LED_PIN);
             displayRound(round);
-
             while (CURRENT_TIME > 0)
             {
                 displayTime(CURRENT_TIME);
@@ -145,13 +153,13 @@ namespace Timer
                 displayTime(CURRENT_TIME);
             }
         }
-        disableTimer();
-        switchLed(0);
+        timerAction = timerAfterTrainingAction;
         (*endCallback)(TOTAL_TIME);
         TRAINING_ENABLED = false;
         digitalWrite(ROUND_LED_PIN, HIGH);
         digitalWrite(REST_LED_PIN, HIGH);
         tone(Timer::BUZZER_PIN, 4000, 2000);
+
         unsigned long endMilis = millis();
         Serial.print("End time: ");
         Serial.println(endMilis);
@@ -159,5 +167,5 @@ namespace Timer
         Serial.print("Total time: ");
         Serial.println(totalMilis);
     }
-
+    
 } // namespace Timer

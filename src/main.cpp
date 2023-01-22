@@ -1,7 +1,4 @@
 #include <Arduino.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/eeprom.h>
 
 #include "hc595.h"
 #include "encoder.h"
@@ -85,6 +82,9 @@ void displayMenu()
 
 void encoderBtnAction(unsigned int press_time)
 {
+  Timer::disableTimer();
+  Timer::switchLed(0);
+
   if (press_time < 1000)
   {
     MENU_OPTION++;
