@@ -134,12 +134,12 @@ namespace Timer
             (*timeDisplayCallback)(CURRENT_TIME);
         } while (CURRENT_TIME > 0);
 
-        for (int round = (int)routine.ROUNDS; round > 0; round--)
+        for (int round = 0; round < (int)routine.ROUNDS; round++)
         {
             // ROUND TIME
             CURRENT_TIME = routine.ROUND_TIME;
             switchLed(ROUND_LED_PIN);
-            displayRound(round);
+            displayRound(round + 1);
             while (CURRENT_TIME > 0)
             {
                 displayTime(CURRENT_TIME);
